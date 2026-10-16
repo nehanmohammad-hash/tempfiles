@@ -11,9 +11,9 @@
 \contentsline {section}{\numberline {5}Checking the Completed Breadboard Circuit}{6}{section.5}%
 \contentsline {subsection}{\numberline {5.1}Troubleshooting corrupted LCD characters}{7}{subsection.5.1}%
 \contentsline {section}{\numberline {6}Moving the Circuit to Perfboard}{9}{section.6}%
-\contentsline {subsection}{\numberline {6.1}PT100 terminals shorted during soldering}{13}{subsection.6.1}%
-\contentsline {section}{\numberline {7}Enclosure Design in OpenSCAD}{13}{section.7}%
-\contentsline {section}{\numberline {8}Calibration, Verification, and Practical Limitations}{14}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Project Demonstration}{15}{subsection.8.1}%
-\contentsline {section}{\numberline {9}Key Takeaways}{18}{section.9}%
-\contentsline {paragraph}{Project demonstration}{19}{section*.18}%
+\contentsline {subsection}{\numberline {6.1}PT100 terminals shorted during soldering}{14}{subsection.6.1}%
+\contentsline {section}{\numberline {7}Enclosure Design in OpenSCAD}{14}{section.7}%
+\contentsline {section}{\numberline {8}Calibration, Verification, and Practical Limitations}{15}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Project Demonstration}{16}{subsection.8.1}%
+\contentsline {section}{\numberline {9}Key Takeaways}{19}{section.9}%
+\contentsline {paragraph}{Project demonstration}{20}{section*.19}%
