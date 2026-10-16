@@ -209,7 +209,7 @@ When a sensor exhibits a nonlinear voltage--temperature relationship, a polynomi
 where \(T\) is the reference temperature in \(^\circ\mathrm{C}\), \(v\) is the measured sensor voltage in Volts (V), and \(A\), \(B\), and \(C\) are calibration coefficients determined experimentally. Note that our system utilizes a reference resistance of approximately \SI{120}{\ohm}.
 
 \subsection{Experimental Data Collection}
-Calibration begins with the collection of experimental data where each observation pairs a sensor voltage with a reference temperature, Note that, the measured data contains 6 decimal points but the least count of ADC is not : \((v_1, T_1), \ldots, (v_N, T_N)\). 
+Calibration begins with the collection of experimental data where each observation pairs a sensor voltage with a reference temperature, Note that, the measured data contains 6 decimal points but the least count of ADC is not : \((v_1, T_1), \ldots, (v_N, T_N)\).
 
 Below is a dataset for our initial calibration dataset containing roughly 7 ADC voltage and temperature measurements (note that this initial dataset led to an average error of 5--6 degrees due to calibration offsets):
 
@@ -231,102 +231,81 @@ Observation \(i\) & temperature \(v_i\) (V) & Voltage \(T_i\) (\(^\circ\mathrm{C
 \caption{Initial Calibration Dataset   (\(~7\) points, leading to 5--6\(^\circ\mathrm{C}\) error).}
 \end{table}
 
-\subsection{Method I: Algebraic Method (Intuition and Formulation)}
-For beginners, the algebraic method serves as the most intuitive starting point because it translates physical measurements directly into traditional algebra. 
+\begin{table}[H]
+\centering
+\begin{tabular}{ccc}
+\toprule
+Observation \(i\) & Temperature \(v_i\) (V) & Voltage \(T_i\) (\(^\circ\mathrm{C}\)) \\
+\midrule
+1 & 7.3  & 2.359883 \\
+2 & 10.8 & 2.374663 \\
+3 & 15.1 & 2.394369 \\
+4 & 20.1 & 2.414076 \\ 
+5 & 25.8 & 2.438710 \\ 
+6 & 30.2 & 2.458416 \\ 
+7 & 34.8 & 2.478123 \\
+8 & 39.5 & 2.497633 \\
+9 & 44.4 & 2.517537 \\
+10 & 50.5 & 2.542170 \\
+11 & 56.9 & 2.566803 \\
+12 & 60.4 & 2.581583 \\
+13 & 65.5 & 2.601260 \\
+14 & 71.1 & 2.620997 \\
+15 & 73.9 & 2.630850 \\ 
+16 & 79.4 & 2.650557 \\
+17 & 83.2 & 2.665337 \\ 
+18 & 90.3 & 2.689971 \\ 
+19 & 96.8 & 2.714604 \\
+\bottomrule
+\end{tabular}
+\caption{Final Calibration Table   (\(~19\) voltages with minimal error).}
+\end{table}
 
-Imagine plotting your measured voltages on the horizontal axis and reference temperatures on the vertical axis. We want to find a parabola (quadratic curve) that best follows these points. Substituting a specific voltage \(v_i\) and its paired temperature \(T_i\) into our model gives one algebraic equation:
-\[Av_i^2 + Bv_i + C = T_i\]
 
-If we have \(N\) experimental observations, we can write down \(N\) such equations. If we only had three data points, we could solve them simultaneously to find a unique parabola passing exactly through all three points. However, real-world sensor measurements always contain small noise and experimental errors. If a single data point is corrupted by noise, forcing the curve to pass through it creates wild inaccuracies elsewhere. 
+\subsection{Computational Method Using NumPy polyfit}
+In practice, manual matrix inversion and custom implementations can be streamlined using robust numerical libraries. Here, we utilize NumPy's built-in \texttt{polyfit} function to perform a 2nd-order polynomial least-squares regression directly on our calibration dataset. The script initializes the voltage and temperature arrays, computes the coefficients for the quadratic model \(T = aX^2 + bX + c\), and prints them formatted for microcontroller implementation.
 
-To utilize all available data and smooth out measurement noise, we collect an overdetermined set of equations (\(N > 3\)). Since no single parabola can pass through every noisy point simultaneously, we define a residual error \(e_i = T_i - (Av_i^2 + Bv_i + C)\) for each point. The least-squares technique minimizes the cumulative squared error across all observations:
-\[J(A,B,C) = \sum_{i=1}^{N} \left[T_i - (Av_i^2 + Bv_i + C)\right]^2\]
-By finding the coefficients \(A\), \(B\), and \(C\) that minimize \(J(A,B,C)\), we obtain a statistically robust calibration curve that balances all measurements.
-
-\subsection{Method II: Matrix Method (Compact Mathematical Representation)}
-While writing out individual algebraic equations is great for conceptual understanding, it becomes extremely tedious when handling dozens of data points. The matrix method streamlines this by packaging the entire system into a compact linear algebra formulation.
-
-For each observation \(i\), we can express the scalar equation as a matrix product:
-\[\begin{bmatrix} v_i^2 & v_i & 1 \end{bmatrix} \begin{bmatrix} A \\ B \\ C \end{bmatrix} = T_i\]
-
-When we stack all \(N\) observations together, the individual row vectors combine to form a large design matrix \(X\), the coefficients form a column vector \(\boldsymbol{\theta}\), and the reference temperatures form a vector \(\mathbf{T}\):
-\[X = \begin{bmatrix} v_1^2 & v_1 & 1 \\ v_2^2 & v_2 & 1 \\ \vdots & \vdots & \vdots \\ v_N^2 & v_N & 1 \end{bmatrix}, \quad \boldsymbol{\theta} = \begin{bmatrix} A \\ B \\ C \end{bmatrix}, \quad \mathbf{T} = \begin{bmatrix} T_1 \\ T_2 \\ \vdots \\ T_N \end{bmatrix}\]
-
-Thus, the entire calibration problem simplifies to the matrix equation:
-\[X\boldsymbol{\theta} \approx \mathbf{T}\]
-
-To solve this least-squares problem geometrically and algebraically, we project the target vector \(\mathbf{T}\) onto the column space of \(X\). This leads directly to the standard normal equations:
-\[X^\mathsf{T}X\boldsymbol{\theta} = X^\mathsf{T}\mathbf{T}\]
-Assuming the columns of \(X\) are linearly independent, we can invert \(X^\mathsf{T}X\) to solve uniquely for the coefficient vector:
-\[\boldsymbol{\theta} = (X^\mathsf{T}X)^{-1}X^\mathsf{T}\mathbf{T}\]
-This matrix formulation provides a universal framework that scales effortlessly whether you have 10 data points or 10,000, and it extends directly to higher-order polynomials by simply adding more columns to the design matrix \(X\).
-
-\subsection{Method III: Computational Method Using Python}
-In practice, manual matrix inversion can lead to numerical instability and rounding errors. Modern engineering implementations rely on numerical computing libraries like Python's NumPy to solve least-squares problems robustly via advanced matrix decompositions (`np.linalg.lstsq`).
-
-The computational workflow is structured into three logical blocks:
-\begin{enumerate}
-    \item \textbf{Data Initialization Block:} Sets up the measured sensor voltages and reference temperatures as NumPy arrays.
-    \item \textbf{Design Matrix Construction Block:} Uses `texttt{np.column\_stack}` to assemble the squared voltage, linear voltage, and constant columns into the design matrix \(X\).
-    \item \textbf{Least-Squares Regression Block:} Invokes NumPy's least-squares solver to extract optimal coefficients \(A\), \(B\), and \(C\).
-\end{enumerate}
-
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!75!black,title=Python: Experimental Data and Design Matrix]
+\begin{tcolorbox}[colback=gray!5!white,colframe=gray!75!black,title=Python: Polynomial Curve Fitting via NumPy polyfit]
 \small
 \begin{verbatim}
 import numpy as np
 
-# 1. Initialize experimental data arrays
-# Voltage measurements in volts (~120 ohm ref setup)
-v = np.array([0.50, 0.70, 0.90, 
-              1.10, 1.30, 1.50, 1.70])
+X_data = np.array([
+    2.359883, 2.374663, 2.394369, 2.414076, 2.438710,
+    2.458416, 2.478123, 2.497633, 2.517537, 2.542170,
+    2.566803, 2.581583, 2.601260, 2.620997, 2.630850,
+    2.650557, 2.665337, 2.689971, 2.714604
+])
 
-# Corresponding reference temperatures in degrees Celsius
-T = np.array([20.2, 25.1, 29.8, 
-              35.3, 41.0, 47.2, 53.1])
+T_data = np.array([
+    7.3, 10.8, 15.1, 20.1, 25.8, 30.2, 34.8,
+    39.5, 44.4, 50.5, 56.9, 60.4, 65.5, 71.1,
+    73.9, 79.4, 83.2, 90.3, 96.8
+])
 
-# 2. Construct design matrix X containing [v^2, v, 1]
-X = np.column_stack((v**2, v, 
-                     np.ones_like(v)))
+# 2. Fit a 2nd-order polynomial (Quadratic: T = a*X^2 + b*X + c)
+a, b, c = np.polyfit(X_data, T_data, 2)
+
+print(f"const float a = {a:.8f};")
+print(f"const float b = {b:.8f};")
+print(f"const float c = {c:.8f};")
 \end{verbatim}
 \end{tcolorbox}
 
-The next block computes the regression coefficients by solving the overdetermined system:
+\begin{center}
+    \small
+    The Python calibration script is located in:\\[0.3em]
+    \fbox{\texttt{calibration/calibration\_source\_code.py}}\\[1em]
+    
+    The experimental calibration dataset is stored in:\\[0.3em]
+    \fbox{\texttt{calibration/calibration\_data.dat}}\\[1em]
+    
+    The source code uploaded to the Arduino is in the following directory:\\[0.3em]
+    \fbox{\texttt{source\_code.cpp}}
+\end{center}
 
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!75!black,title=Python: Coefficient Computation via Least Squares]
-\small
-\begin{verbatim}
-# 3. Solve X * theta = T using least-squares
-coefficients, residual_sum, rank, \
-    singular_values = np.linalg.lstsq(
-        X, T, rcond=None
-    )
+It is important to note that the source code implements the least squares method for the calibration through use of polyfit. 
 
-A, B, C = coefficients
-print("A =", A)
-print("B =", B)
-print("C =", C)
-\end{verbatim}
-\end{tcolorbox}
-
-Finally, the third block evaluates model accuracy by computing predictions, residuals, and Root Mean Square Error (RMSE), and demonstrates real-time temperature inference:
-
-\begin{tcolorbox}[colback=gray!5!white,colframe=gray!75!black,title=Python: Model Evaluation and Inference]
-\small
-\begin{verbatim}
-# 4. Evaluate fit quality and compute RMSE
-T_predicted = A * v**2 + B * v + C
-residuals = T - T_predicted
-rmse = np.sqrt(np.mean(residuals**2))
-print("RMSE =", rmse, "deg C")
-
-# 5. Perform inference for a new voltage reading
-v_new = 1.40
-T_estimated = A * v_new**2 + \
-              B * v_new + C
-print("Estimated Temp:", T_estimated)
-\end{verbatim}
-\end{tcolorbox}
 \section{Checking the Completed Breadboard Circuit}
 
 After the circuit was operating, we rechecked the individual connections
@@ -342,8 +321,8 @@ expected sensor path could indicate a poor connection, a wrong connection,
 or a short circuit.
 
 \subsection{Troubleshooting corrupted LCD characters}
-After integrating the LCD, potentiometer, PT100, and Arduino, the display
-showed corrupted characters rather than the intended output. We checked
+After integrating the LCD, potentiometer, PT100, and Arduino, the
+display showed corrupted characters rather than the intended output. We checked
 the circuit again and found two contributing issues: some jumper wires
 were damaged, and the LCD data connections had been made in reverse
 order. Since the LCD uses several parallel data lines, incorrect ordering
@@ -361,8 +340,8 @@ the circuit.
 the LCD pin assignments from those shown in the reference PDF to create
 a neater and more practical physical layout. The Arduino sketch was
 updated to match the revised wiring. After making the changes, we checked
-the connections and tested the LCD signals to confirm that the pins were
-working as intended. We also verified the completed program's behaviour
+the connections and tested the LCD signals to confirm that the pins
+were working as intended. We also verified the completed program's behaviour
 and confirmed that no callback-related errors remained at the end of
 testing.
 
@@ -387,8 +366,38 @@ the cost of making the circuit difficult to inspect or repair.
 
 We soldered the header pins such that, it fit perfectly on the arduino, creating a very compact design without use the wires. You can just pop-in the header pins directly to the arduino digital pins quite easily and without the mess of wires getting in the way.
 
-\ProjectImage{figs/finalsolder_circuit.jpeg}
-{Soldered circuit arranged on perfboard.}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\columnwidth]{figs/finalsolder_circuit.jpeg}
+    \caption{Compact soldered circuit}
+    \label{fig:demo1}
+\end{figure}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\columnwidth]{figs/solder1.jpeg}
+    \caption{Sideview of soldered circuit}
+    \label{fig:demo1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\columnwidth]{figs/solder2.jpeg}
+    \caption{Disassembled arduino}
+    \label{fig:demo2}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\columnwidth]{figs/solder3.jpeg}
+    \caption{Soldered circuit}
+    \label{fig:demo3}
+\end{figure}
+
+
+
 
 \subsection{PT100 terminals shorted during soldering}
 
@@ -425,11 +434,8 @@ than as decoration: a useful case must accommodate the real component
 dimensions and allow access to the display without placing pressure on
 the solder joints or wires.
 
-\ProjectImage{figs/3dmodel_view1.jpeg}
-{First view of the thermometer enclosure model in OpenSCAD.}
-
 \ProjectImage{figs/3dmodel-view2.png}
-{Additional view of the enclosure model, used to inspect its overall form and layout.}
+{View of the enclosure model, used to inspect its overall form and layout.}
 
 The modelling stage also made us think about maintainability. A compact
 case is valuable only if the circuit can still be assembled, inspected,
@@ -440,43 +446,10 @@ the actual perfboard, LCD, and cable positions before fabrication.
 
 Calibration was performed manually rather than through the automated
 OCR and machine-learning pipeline described in the reference paper.
-The generic PT100 least-squares coefficient method initially led to a noticeable temperature error of 5--6 degrees Celsius. Upon investigation, we discovered that the reference voltage was initially assumed to be 4.7\,V, whereas the actual supply voltage measured directly was 5\,V—an error attributed to a faulty multimeter during preliminary checks.
+The generic PT100 least-squares coefficient method initially led to a noticeable temperature error of 5--6 degrees Celsius. Upon investigation, we discovered that the reference voltage was initially assumed to be 4.7\,V, whereas the actual supply voltage measured directly was 5\,V---an error attributed to a faulty multimeter during preliminary checks.
 
 To rectify this and achieve high precision, we performed a refined final calibration using an expanded dataset of 19 voltage measurements with minimal error. Below is the placeholder for our final calibration dataset table:
 
-\begin{table}[H]
-\centering
-\begin{tabular}{ccc}
-\toprule
-Observation \(i\) & Temperature \(v_i\) (V) & Voltage \(T_i\) (\(^\circ\mathrm{C}\)) \\
-\midrule
-1 & 7.3  & 2.359883 \\
-2 & 10.8 & 2.374663 \\
-3 & 15.1 & 2.394369 \\
-4 & 20.1 & 2.414076 \\ 
-5 & 25.8 & 2.438710 \\ 
-6 & 30.2 & 2.458416 \\ 
-7 & 34.8 & 2.478123 \\
-8 & 39.5 & 2.497633 \\
-9 & 44.4 & 2.517537 \\
-10 & 50.5 & 2.542170 \\
-11 & 56.9 & 2.566803 \\
-12 & 60.4 & 2.581583 \\
-13 & 65.5 & 2.601290 \\
-14 & 71.1 & 2.620997 \\
-15 & 73.9 & 2.630850 \\ 
-16 & 79.4 & 2.650557 \\
-17 & 83.2 & 2.665337 \\ 
-18 & 90.3 & 2.689971 \\ 
-19 & 96.8 & 2.714604 \\
-
-
-
-
-\bottomrule
-\end{tabular}
-\caption{Final Calibration Table   (\(~19\) voltages with minimal error).}
-\end{table}
 
 The reference material explains why calibration matters: the PT100's
 resistance-temperature relation is predictable but not perfectly linear,
@@ -498,13 +471,16 @@ value, poor connections, supply variation, sensor placement, or
 insufficient calibration. Likewise, a stable LCD reading is not proof
 of industrial-grade accuracy. Accuracy must be established by repeated
 comparison with a suitable reference over the intended operating range.
+
+We have calibrated from 0-100 degree celsius. To have accurate measurment beyond this range requires further calibration. In view of this, the data sockets of arduino have been left exposed for easy access to potential developments.  
+
 \subsection{Project Demonstration}
 
 After tedious verification and calibration, our project was finally completed. Given below are four demonstrations of our thermometer alongside, laboratory grade thermometer.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\columnwidth]{figs/demo1.jpeg}
+    \includegraphics[width=0.5\columnwidth]{figs/demo1.jpeg}
     \caption{Project demonstration 1 alongside laboratory-grade thermometer.}
     \label{fig:demo1}
 \end{figure}
@@ -525,7 +501,7 @@ After tedious verification and calibration, our project was finally completed. G
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.75\columnwidth]{figs/demo4.jpeg}
+    \includegraphics[width=0.65\columnwidth]{figs/demo4.jpeg}
     \caption{Project demonstration 4 alongside laboratory-grade thermometer.}
     \label{fig:demo4}
 \end{figure}
@@ -556,9 +532,7 @@ make half-hearted innovations in secondary aspects of the design. The
 priority is a dependable reading whose limitations are understood and
 whose performance has been checked against a reference.
 
-\ProjectImage{figs/finalcomplete_circuit.jpeg}
-{Completed thermometer assembly, representing the outcome of the circuit-development process.}
-
+Finally we have acheived a thermometer with a margin of error of 0.2~0.3 degrees as compared to the laboratory thermometer.
 
 \paragraph{Project demonstration}
 The complete demo of this project can be found at
