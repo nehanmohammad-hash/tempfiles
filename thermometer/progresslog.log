@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.9.24)  16 OCT 2026 16:35
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (TeX Live 2025/Debian) (preloaded format=pdflatex 2026.9.24)  16 OCT 2026 16:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -651,23 +651,7 @@ h' as default language. on input line 51.
 (/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count359
-) (./progresslog.aux
-
-LaTeX Warning: Label `fig:demo1' multiply defined.
-
-
-LaTeX Warning: Label `fig:demo3' multiply defined.
-
-
-LaTeX Warning: Label `fig:demo1' multiply defined.
-
-
-LaTeX Warning: Label `fig:demo2' multiply defined.
-
-
-LaTeX Warning: Label `fig:demo3' multiply defined.
-
-)
+) (./progresslog.aux)
 \openout1 = `progresslog.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 51.
@@ -885,17 +869,14 @@ Package pdftex.def Info: figs/demo4.jpeg  used on input line 512.
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
-
-LaTeX Warning: There were multiply-defined labels.
-
 Package rerunfilecheck Info: File `progresslog.out' has not changed.
 (rerunfilecheck)             Checksum: FEB244AA86CEED1D186F4319DA6F8090;3684.
  ) 
 Here is how much of TeX's memory you used:
- 30087 strings out of 467533
- 621297 string characters out of 5422138
- 1012047 words of memory out of 5000000
- 58446 multiletter control sequences out of 15000+600000
+ 30092 strings out of 467533
+ 621372 string characters out of 5422138
+ 1012274 words of memory out of 5000000
+ 58451 multiletter control sequences out of 15000+600000
  637269 words of font info for 123 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  98i,10n,108p,1008b,1175s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -909,7 +890,7 @@ pe1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/pub
 lic/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
 sfonts/cm/cmtt12.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb
 >
-Output written on progresslog.pdf (23 pages, 4347016 bytes).
+Output written on progresslog.pdf (23 pages, 4347022 bytes).
 PDF statistics:
  303 PDF objects out of 1000 (max. 8388607)
  241 compressed objects within 3 object streams

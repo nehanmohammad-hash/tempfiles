@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1792148713.04079 "progresslog.tex" "progresslog.pdf" "progresslog" 1792148713.76403 0
+["pdflatex"] 1792149636.17402 "progresslog.tex" "progresslog.pdf" "progresslog" 1792149636.87246 0
   "/etc/texmf/web2c/texmf.cnf" 1787847508.99792 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/tcrm1200.tfm" 1136768653 1536 74b7293ec3713bb7fdca8dd1bd1f469c ""
@@ -175,10 +175,10 @@
   "figs/solder2.jpeg" 1792144569.17569 111144 fbb08a05705f283b19ad571cb637cd7b ""
   "figs/solder3.jpeg" 1792144638.06236 52573 01146f81217172bcd86648dbd1f2177f ""
   "figs/solder4.jpeg" 1792148517.99828 86189 a6ef583e27102f331c7eceed59c263f0 ""
-  "progresslog.aux" 1792148713.69501 6096 ff1a1cbde77c753c67cf021b8889d9a7 "pdflatex"
-  "progresslog.out" 1792148713.69501 3684 feb244aa86ceed1d186f4319da6f8090 "pdflatex"
-  "progresslog.tex" 1792148708.34387 23969 08fe09d233161062b99025a4a6870d13 ""
-  "progresslog.toc" 1792148713.69601 1656 68f430b84390ecd47d9d1ab96af27c3e "pdflatex"
+  "progresslog.aux" 1792149636.80709 6132 1d4864b104b6e6d33615d7e4b6b6a9d2 "pdflatex"
+  "progresslog.out" 1792149636.80709 3684 feb244aa86ceed1d186f4319da6f8090 "pdflatex"
+  "progresslog.tex" 1792149634.33517 24005 36c1eedc950ae70c5f9f6fdefa2cfb0f ""
+  "progresslog.toc" 1792149636.80809 1656 68f430b84390ecd47d9d1ab96af27c3e "pdflatex"
   (generated)
   "progresslog.aux"
   "progresslog.log"
